@@ -9,7 +9,7 @@ var jwt = require('jsonwebtoken');
 const secret = 'Fullstack-login'
 
 app.use(cors())
-
+////rrt
 const mysql = require('mysql2');
 // create the connection to database
 const connection = mysql.createConnection({
