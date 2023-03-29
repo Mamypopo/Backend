@@ -7,8 +7,9 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 var jwt = require('jsonwebtoken');
 const secret = 'Fullstack-login'
-
 app.use(cors())
+
+
 const mysql = require('mysql2');
 // create the connection to database
 const connection = mysql.createConnection({
@@ -17,6 +18,7 @@ const connection = mysql.createConnection({
     database: 'mydb'
   });
 
+  
 app.post('/signup', jsonParser, function (req, res, next) {
     bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
         connection.execute(
