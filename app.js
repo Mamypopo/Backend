@@ -22,6 +22,7 @@ const connection = mysql.createConnection({
 app.post('/signup', jsonParser, function (req, res, next) {
     bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
         connection.execute(
+            
             'INSERT INTO users (email, password, fname, lname, stunum, phone, faculty, branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [req.body.email,hash, req.body.fname, req.body.lname, req.body.stunum ,req.body.phone ,req.body.faculty ,req.body.branch],
             function(err, results, fields) {
@@ -37,6 +38,8 @@ app.post('/signup', jsonParser, function (req, res, next) {
     
 })
 
+
+
 app.post('/signin', jsonParser, function (req, res, next) {
     connection.execute(
         'SELECT * FROM users WHERE email=?',
@@ -44,6 +47,32 @@ app.post('/signin', jsonParser, function (req, res, next) {
         function(err, users, fields) {
             if(err){res.json({status:'error',massage: err}); return  }
             if (users.length ==0) {res.json({status:'error',massage: 'no user found'}); return  }
+            console.log(users);
+            if (users[0].role == 'admin'){res.json({status:'error',massage: err}); return  }
+            bcrypt.compare(req.body.password, users[0].password, function(err, isLogin) {
+                if (isLogin){
+                    var token = jwt.sign({ email: users[0].email }, secret ,{ expiresIn: '1h' });
+                    res.json({status:'ok', massage:'login success',token })
+                } else {
+                    res.json({status:'errrr', massage:'login failed'})
+                }
+                
+            });
+          
+        }
+    );
+})
+
+
+app.post('/signin/admin', jsonParser, function (req, res, next) {
+    connection.execute(
+        'SELECT * FROM users WHERE email=?',
+        [req.body.email],
+        function(err, users, fields) {
+            if(err){res.json({status:'error',massage: err}); return  }
+            if (users.length ==0) {res.json({status:'error',massage: 'no user found'}); return  }
+            console.log(users);
+            if (users[0].role != 'admin'){res.json({status:'error',massage: err}); return  }
             bcrypt.compare(req.body.password, users[0].password, function(err, isLogin) {
                 if (isLogin){
                     var token = jwt.sign({ email: users[0].email }, secret ,{ expiresIn: '1h' });
