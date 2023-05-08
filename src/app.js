@@ -8,9 +8,9 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors(config.app.domain));
+app.use(cors([config.app.domain]));
 
-app.use(fileUpload);
+app.use(fileUpload());
 
 app.use(indexRoutes);
 
