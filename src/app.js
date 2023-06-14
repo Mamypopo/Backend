@@ -3,6 +3,7 @@ import fileUpload from 'express-fileupload';
 import cors from 'cors';
 import config from './config.js';
 import indexRoutes from './index.routes.js';
+import pool from './database.js';
 
 const app = express();
 

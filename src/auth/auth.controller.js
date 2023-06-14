@@ -1,36 +1,40 @@
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import config from '../config.js';
+import pool from '../database.js';
 
 // eslint-disable-next-line import/prefer-default-export
-export const login = (req, res) => {
-  console.log('eiei');
-  const { username, password } = req.body;
+export const login = async (req, res) => {
+  const { email, password } = req.body;
 
   try {
-    const user = {
-      username: 'eiei',
-      password: '123456',
-    };
+    const sql = 'SELECT * FROM users WHERE email=?';
+    const [user] = await pool.query(sql, [email]);
+    if (user.length > 0) {
+      const match = await bcrypt.compare(password, user[0].password)
+      if (match === true) {
+        const token = jwt.sign(user[0], config.app.jwtKey, {
+          expiresIn: "1h"
+        })
 
-    if (username === user.username && password === user.password) {
-      const token = jwt.sign({
-        name: 'Man',
-        role: 'student',
-      }, config.app.jwtKey);
+        console.log(token)
 
-      res.status(200).send({
-        token,
-        user: {
-          name: 'Man',
-          role: 'student',
-        },
-      });
-      return;
+        res.send({ token, user: user[0] })
+
+      } else{
+        res.status(401).send({
+          message: 'password pid'
+        })
+      }
+
+
+    }
+    else {
+      res.status(401).send({
+        message: 'username password not found'
+      })
     }
 
-    res.status(400).send({
-      message: 'username password ผิด',
-    });
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
