@@ -1,8 +1,23 @@
-const express = require('express')
-const app = express()
-const multer  = require('multer')
-const upload = multer()
+import multer from "multer";
+const up = multer({ dest: "uploads/" });
 
-app.post('/upload', upload.none(), function (req, res, next) {
-    req.body.file
-})
+
+export const uploadFiles  = async (req, res) => {
+  try {
+    console.log(req.files,req.body);
+
+    if (req.file == undefined) {
+      return res.status(400).send({ message: "Upload a file please!" });
+      
+    }    
+    
+    res.status(200).send({
+      message: "uploaded successfully: "
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: `Unable to upload the file:`
+    });
+  }
+};
+

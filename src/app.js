@@ -15,7 +15,7 @@ app.use(cors([config.app.domain]));
 
 app.use(fileUpload());  
 
-
+//app.use(multer());
 
 
 app.use(indexRoutes);
