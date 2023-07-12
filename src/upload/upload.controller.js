@@ -1,12 +1,13 @@
 import multer from "multer";
 const up = multer({ dest: "uploads/" });
+const storage = multer.memoryStorage();
 
 
 export const uploadFiles  = async (req, res) => {
   try {
     console.log(req.files,req.body);
-
-    if (req.file == undefined) {
+    
+    if (req.files == undefined) {
       return res.status(400).send({ message: "Upload a file please!" });
       
     }    
@@ -21,3 +22,5 @@ export const uploadFiles  = async (req, res) => {
   }
 };
 
+
+export default multer({ storage }).single('image');
