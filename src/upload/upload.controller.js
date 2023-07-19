@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/prefer-default-export
 export const uploadFiles = async (req, res) => {
+  console.log(req.file);
   try {
     res.status(200).send({
       message: 'uploaded successfully:',
