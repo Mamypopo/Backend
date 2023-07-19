@@ -4,7 +4,7 @@ const pool = createPool({
     host: "localhost",
     Post:"3306",
     user: "root",
-    password: "",
+    password: "napat171997",
     database: 'mydb'
 }).promise();
 

@@ -3,7 +3,7 @@ import { uploadFiles } from './upload.controller.js';
 
 const router = Router();
 
-router.post('/uploadFiles',uploadFiles, );
+router.post('/uploadFiles',uploadFiles );
 
 
 

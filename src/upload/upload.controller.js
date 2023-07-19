@@ -1,17 +1,22 @@
 import multer from "multer";
+
 const up = multer({ dest: "uploads/" });
 const storage = multer.memoryStorage();
 
 
 export const uploadFiles  = async (req, res) => {
+  //console.log(req.files,req.body);
+  console.log(fileName);
   try {
-    console.log(req.files,req.body);
-    
+    let fileName = "jj";
+    console.log(fileName);
+    await fs.writeFileSync(up, fileName);
+    console.log('await');
+    res.send(fileName);
+    console.log('send');
     if (req.files == undefined) {
-      return res.status(400).send({ message: "Upload a file please!" });
-      
-    }    
-    
+      return res.status(400).send({ message: "Upload a file please!" });     
+    }       
     res.status(200).send({
       message: "uploaded successfully: "
     });
@@ -23,4 +28,3 @@ export const uploadFiles  = async (req, res) => {
 };
 
 
-export default multer({ storage }).single('image');
