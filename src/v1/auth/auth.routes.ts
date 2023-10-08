@@ -15,5 +15,7 @@ export default class AuthRoute extends RouterBase {
     this.router.get('/profile', validateToken, this.authController.getProfile.bind(this.authController));
 
     this.router.post('/login', this.authController.login.bind(this.authController));
+
+    this.router.post('/register', this.authController.register.bind(this.authController));
   }
 }

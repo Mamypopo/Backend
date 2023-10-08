@@ -5,6 +5,7 @@ import UserModel from '../common/user/user.base';
 import InvalidIdError from './error/invalid-id.error';
 import InvalidPasswordError from './error/invalid-password.error';
 import InvalidEmailError from './error/invalid-email.error';
+import StudentService from '../student/student.service';
 
 type UserWithoutPassword = Omit<UserModel, 'password'>;
 
@@ -44,5 +45,25 @@ export default class AuthService {
     }
 
     throw new InvalidIdError();
+  }
+
+  public async createUser(user: UserModel) {
+    const encryptPass = await bcrypt.hash(user.password!, 10);
+    let userId = 0;
+    const newUser = { ...user };
+    newUser.password = encryptPass;
+    if (user.role === 'student') {
+      userId = await new StudentService().createStudent(newUser);
+    }
+
+    const userWithoutPass: UserWithoutPassword = { ...user };
+    userWithoutPass.id = userId;
+
+    const token = this.tokenManager.generateToken(userWithoutPass);
+
+    return {
+      user: userWithoutPass,
+      token,
+    };
   }
 }

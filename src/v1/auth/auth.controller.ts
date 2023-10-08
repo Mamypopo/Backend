@@ -78,4 +78,20 @@ export default class AuthController {
       next(error);
     }
   }
+
+  async register(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { user, token } = await this.authService.createUser(req.body);
+      res.status(200).send({
+        status: 'success',
+        result: {
+          user, token,
+        },
+        message: '-',
+        cause: '-',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

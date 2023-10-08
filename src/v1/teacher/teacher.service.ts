@@ -1,9 +1,9 @@
-import { RowDataPacket } from 'mysql2';
+import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import { main as db } from '../../database';
-import { TeacherModel } from './teacher.model';
+import User, { NewUser } from '../common/user/user.base';
 
-export default class TeacherRepository {
-  public async getUserByEmail(email: string): Promise<TeacherModel | undefined> {
+export default class TeacherService {
+  public async getUserById(id: number): Promise<User | undefined> {
     const sql = `SELECT
                  id,
                  email,
@@ -15,31 +15,49 @@ export default class TeacherRepository {
                  phone,
                  line_id as lineId,
                  facebook_name as facebookName
-                 FROM admins
-                 WHERE email = ?`;
-
-    const [[admin]] = await db.query<RowDataPacket[]>(sql, email);
-
-    return admin as TeacherModel;
-  }
-
-  public async getUserById(id: number): Promise<TeacherModel | undefined> {
-    const sql = `SELECT
-                 id,
-                 email,
-                 password,
-                 first_name as firstName,
-                 last_name as lastName,
-                 faculty,
-                 branch,
-                 phone,
-                 line_id as lineId,
-                 facebook_name as facebookName
-                 FROM admins
+                 FROM vuser
                  WHERE id = ?`;
 
-    const [[admin]] = await db.query<RowDataPacket[]>(sql, id);
+    const [[teacher]] = await db.query<RowDataPacket[]>(sql, id);
 
-    return admin as TeacherModel;
+    return teacher as User;
+  }
+
+  public async createTeacher(teacher: NewUser) {
+    let connection = null;
+    try {
+      const userSql = 'INSERT INTO users SET email = ?, password = ?, first_name = ?, last_name = ?, role = ?';
+      const teacherSql = 'INSERT INTO teachers SET faculty = ?, branch = ?, line_id = ?, facebook_name = ?, phone = ?';
+
+      connection = await db.getConnection();
+
+      await connection.beginTransaction();
+
+      const [{ insertId }] = await connection.query(userSql, [
+        teacher.email,
+        teacher.password,
+        teacher.firstName,
+        teacher.lastName,
+        teacher.role,
+      ]) as [ResultSetHeader, FieldPacket[]];
+
+      await connection.query(teacherSql, [
+        teacher.faculty,
+        teacher.branch,
+        teacher.lineId,
+        teacher.facebookName,
+        teacher.phone,
+      ]);
+
+      await connection.commit();
+      connection.release();
+      return insertId;
+    } catch (error) {
+      if (connection) {
+        await connection.rollback();
+        connection.release();
+      }
+      throw error;
+    }
   }
 }
