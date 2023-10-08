@@ -5,6 +5,7 @@ export default interface User {
   firstName: string,
   lastName: string,
   role: string,
+  studentId: string | null,
   faculty: string | null,
   branch: string | null,
   phone: string | null,

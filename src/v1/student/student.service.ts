@@ -43,31 +43,32 @@ export default class StudentService {
     return teacher as User;
   }
 
-  public async createStudent(teacher: NewUser) {
+  public async createStudent(student: NewUser) {
     let connection = null;
     try {
       const userSql = 'INSERT INTO users SET email = ?, password = ?, first_name = ?, last_name = ?, role = ?';
-      const teacherSql = 'INSERT INTO students SET user_id = ?,faculty = ?, branch = ?, line_id = ?, facebook_name = ?, phone = ?';
+      const teacherSql = 'INSERT INTO students SET user_id = ?, student_id = ?, faculty = ?, branch = ?, line_id = ?, facebook_name = ?, phone = ?';
 
       connection = await db.getConnection();
 
       await connection.beginTransaction();
 
       const [{ insertId }] = await connection.query(userSql, [
-        teacher.email,
-        teacher.password,
-        teacher.firstName,
-        teacher.lastName,
-        teacher.role,
+        student.email,
+        student.password,
+        student.firstName,
+        student.lastName,
+        student.role,
       ]) as [ResultSetHeader, FieldPacket[]];
 
       await connection.query(teacherSql, [
         insertId,
-        teacher.faculty,
-        teacher.branch,
-        teacher.lineId,
-        teacher.facebookName,
-        teacher.phone,
+        student.studentId,
+        student.faculty,
+        student.branch,
+        student.lineId,
+        student.facebookName,
+        student.phone,
       ]);
 
       await connection.commit();
