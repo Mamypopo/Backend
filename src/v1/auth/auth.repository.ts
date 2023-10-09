@@ -10,14 +10,14 @@ export default class AuthRepository {
                  id,
                  email,
                  password,
-                 first_name as firstName,
-                 last_name as lastName,
+                 firstName,
+                 lastName,
                  faculty,
                  branch,
                  phone,
-                 line_id as lineId,
+                 lineId,
                  picture,
-                 facebook_name as facebookName
+                 facebookName
                  FROM vUser
                  WHERE email = ?`;
 
@@ -34,15 +34,16 @@ export default class AuthRepository {
     const sql = `SELECT
                  id,
                  email,
-                 first_name as firstName,
-                 last_name as lastName,
+                 password,
+                 firstName,
+                 lastName,
                  faculty,
                  branch,
                  phone,
-                 line_id as lineId,
+                 lineId,
                  picture,
-                 facebook_name as facebookName
-                 FROM students
+                 facebookName
+                 FROM vUser
                  WHERE id = ?`;
 
     const [[user]] = await this.db.query<RowDataPacket[]>(sql, id);
