@@ -1,6 +1,7 @@
 import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import { main as db } from '../../database';
 import User, { NewUser } from '../common/user/user.base';
+import DuplicateUserError from '../common/error/duplicate-user.error';
 
 export default class StudentService {
   public async getUserByEmail(email: string): Promise<User | undefined> {
@@ -76,8 +77,12 @@ export default class StudentService {
       return insertId;
     } catch (error) {
       if (connection) {
+        const dbError = error as { code: string };
         await connection.rollback();
         connection.release();
+        if (dbError.code === 'ER_DUP_ENTRY') {
+          throw new DuplicateUserError();
+        }
       }
       throw error;
     }

@@ -1,3 +1,3 @@
-import InformationRepository from '../../information/information.repository';
+// import InformationRepository from '../../information/information.repository';
 
-export default class AdminInformationRepository extends InformationRepository {}
+// export default class AdminInformationRepository extends InformationRepository {}

@@ -6,7 +6,26 @@ import UserBase from '../common/user/user.base';
 const validateToken = (req: Request, res: Response, next: NextFunction) => {
   try {
     const tokenManager = new TokenManager();
-    const token = req.headers.authorization?.split(' ')[1];
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+      res.status(401).send({
+        message: 'unauthorized',
+        cause: 'missing auth header',
+      });
+      return;
+    }
+
+    const [schema, token] = authHeader.split('');
+
+    if (!schema) {
+      res.status(401).send({
+        message: 'unauthorized',
+        cause: 'invalid token schema',
+      });
+      return;
+    }
+
     if (!token) {
       res.status(401).send({
         message: 'unauthorized',

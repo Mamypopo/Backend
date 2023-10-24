@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import config from './app.config';
@@ -19,7 +19,15 @@ class Main {
       storage: multer.memoryStorage(),
     });
 
-    this.app.use(upload.array('picture'));
+    this.app.use(upload.fields([
+      {
+        name: 'picture',
+        maxCount: 1,
+      },
+      {
+        name: 'pictures',
+      },
+    ]));
   }
 
   private setupMiddleware() {
@@ -29,12 +37,12 @@ class Main {
   }
 
   private setupGlobalErrorHandler() {
-    this.app.use((error: Error, req: Request, res: Response) => {
-      console.error('UNKNOWN ERROR', error);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    this.app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+      console.error('unknown error: ', error);
       res.status(500).send({
         message: 'internal error',
-        result: null,
-        cause: 'unknown',
+        cause: config.app.env !== 'production' ? error.message : 'unknown',
       });
     });
   }

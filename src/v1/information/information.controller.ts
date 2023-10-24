@@ -19,32 +19,39 @@ export default class InformationController {
 
   async addInformation(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!req.file) {
+      if (!req.files) {
         res.status(400).send({
           message: 'error',
           cause: 'file not found',
         });
         return;
       }
-      const { file } = req;
-      const { name, text } = req.body as { name: string, text: string };
-      const { firstName, lastName } = req.user ?? {};
 
-      await this.informationService.createInformation(
-        {
-          name,
-          text,
-          createdBy: `${firstName} ${lastName}`,
-        },
-        {
-          name: file.originalname,
-          data: file.buffer,
-        },
-      );
-      res.status(200).send({
-        message: 'success',
-        result: null,
-        cause: '-',
+      if ('picture' in req.files) {
+        const { name, text } = req.body as { name: string, text: string };
+        const { firstName, lastName } = req.user ?? {};
+
+        await this.informationService.createInformation(
+          {
+            name,
+            text,
+            createdBy: `${firstName} ${lastName}`,
+          },
+          {
+            name: req.files.picture[0].originalname,
+            data: req.files.picture[0].buffer,
+          },
+        );
+        res.status(200).send({
+          message: 'success',
+          result: null,
+          cause: '-',
+        });
+        return;
+      }
+      res.status(400).send({
+        message: 'error',
+        cause: 'invalid file key',
       });
     } catch (error) {
       next(error);

@@ -3,6 +3,7 @@ import InvalidPasswordError from './error/invalid-password.error';
 import InvalidEmailError from './error/invalid-email.error';
 import InvalidIdError from './error/invalid-id.error';
 import AuthService from './auth.service';
+import DuplicateUserError from '../common/error/duplicate-user.error';
 
 export default class AuthController {
   private authService = new AuthService();
@@ -27,7 +28,6 @@ export default class AuthController {
       if (error instanceof InvalidPasswordError) {
         res.status(401).send({
           message: 'unauthorized',
-          result: null,
           cause: 'invalid password',
         });
         return;
@@ -36,7 +36,6 @@ export default class AuthController {
       if (error instanceof InvalidEmailError) {
         res.status(401).send({
           message: 'unauthorized',
-          result: null,
           cause: 'invalid email',
         });
         return;
@@ -45,7 +44,6 @@ export default class AuthController {
       if (error instanceof InvalidIdError) {
         res.status(401).send({
           message: 'unauthorized',
-          result: null,
           cause: 'invalid id',
         });
         return;
@@ -70,7 +68,6 @@ export default class AuthController {
       if (error instanceof InvalidIdError) {
         res.status(401).send({
           message: 'unauthorized',
-          result: null,
           cause: 'invalid id',
         });
         return;
@@ -90,7 +87,14 @@ export default class AuthController {
         message: '-',
         cause: '-',
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      if (error instanceof DuplicateUserError) {
+        res.status(400).send({
+          message: 'cannot register',
+          cause: 'duplicate username',
+        });
+        return;
+      }
       next(error);
     }
   }

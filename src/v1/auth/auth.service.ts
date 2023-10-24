@@ -6,6 +6,7 @@ import InvalidIdError from './error/invalid-id.error';
 import InvalidPasswordError from './error/invalid-password.error';
 import InvalidEmailError from './error/invalid-email.error';
 import StudentService from '../student/student.service';
+import TeacherService from '../teacher/teacher.service';
 
 type UserWithoutPassword = Omit<UserModel, 'password'>;
 
@@ -17,7 +18,7 @@ export default class AuthService {
   public async authenticateByEmailAndPassword(email: string, password: string) {
     const user = await this.authRepo.getUserByEmail(email);
 
-    if (user && user.password) {
+    if (user?.password) {
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (isMatch) {
@@ -54,6 +55,8 @@ export default class AuthService {
     newUser.password = encryptPass;
     if (user.role === 'student') {
       userId = await new StudentService().createStudent(newUser);
+    } else if (user.role === 'teacher') {
+      userId = await new TeacherService().createTeacher(newUser);
     }
 
     const userWithoutPass: UserWithoutPassword = { ...user };
