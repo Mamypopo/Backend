@@ -27,7 +27,7 @@ export default class TeacherService {
     let connection = null;
     try {
       const userSql = 'INSERT INTO users SET email = ?, password = ?, first_name = ?, last_name = ?, role = ?';
-      const teacherSql = 'INSERT INTO teachers SET faculty = ?, branch = ?, line_id = ?, facebook_name = ?, phone = ?';
+      const teacherSql = 'INSERT INTO teachers SET user_id = ?, faculty = ?, branch = ?, line_id = ?, facebook_name = ?, phone = ?';
 
       connection = await db.getConnection();
 
@@ -42,6 +42,7 @@ export default class TeacherService {
       ]) as [ResultSetHeader, FieldPacket[]];
 
       await connection.query(teacherSql, [
+        insertId,
         teacher.faculty,
         teacher.branch,
         teacher.lineId,
