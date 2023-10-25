@@ -4,6 +4,21 @@ import { main as db } from '../../database';
 import { InformationModel, NewInformationModel } from './information.model';
 
 export default class InformationService {
+  async updateFile(picture: { name: string, data: Buffer }, informationId: number) {
+    const splitPictureName = picture.name.split('.');
+
+    const fileName = `information_${informationId}.${splitPictureName.at(splitPictureName.length - 1)}`;
+
+    await fs.writeFile(`./upload/information/${fileName}`, picture.data);
+
+    const updateSql = 'UPDATE informations SET picture = ? WHERE id = ? LIMIT 1';
+
+    await db.query(updateSql, [
+      fileName,
+      informationId,
+    ]);
+  }
+
   async getInformations() {
     const sql = `SELECT
                  id,
@@ -47,18 +62,7 @@ export default class InformationService {
       information.createdBy,
     ]);
 
-    const splitPictureName = picture.name.split('.');
-
-    const fileName = `information_${insertId}.${splitPictureName.at(splitPictureName.length - 1)}`;
-
-    await fs.writeFile(`./upload/information/${fileName}`, picture.data);
-
-    const updateSql = 'UPDATE informations SET picture = ? WHERE id = ? LIMIT 1';
-
-    await db.query(updateSql, [
-      fileName,
-      insertId,
-    ]);
+    await this.updateFile(picture, insertId);
   }
 
   async updateInformation(information: InformationModel, picture?: { name: string, data: Buffer }) {
@@ -78,18 +82,7 @@ export default class InformationService {
     ]);
 
     if (picture) {
-      const splitPictureName = picture.name.split('.');
-
-      const fileName = `information_${information.id}.${splitPictureName.at(splitPictureName.length - 1)}`;
-
-      await fs.writeFile(`./upload/information/${fileName}`, picture.data);
-
-      const updateSql = 'UPDATE informations SET picture = ? WHERE id = ? LIMIT 1';
-
-      await db.query(updateSql, [
-        fileName,
-        information.id,
-      ]);
+      await this.updateFile(picture, information.id);
     }
   }
 

@@ -1,11 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import { TokenExpiredError } from 'jsonwebtoken';
+import TokenExpiredError from './error/token-expired.error';
 import TokenManager from './token-manager';
 import UserBase from '../common/user/user.base';
 
 const validateToken = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const tokenManager = new TokenManager();
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
@@ -34,7 +33,7 @@ const validateToken = (req: Request, res: Response, next: NextFunction) => {
       return;
     }
 
-    const decodedToken = tokenManager.validateToken(token);
+    const decodedToken = new TokenManager().validateToken(token);
 
     if (!decodedToken) {
       res.status(401).send({

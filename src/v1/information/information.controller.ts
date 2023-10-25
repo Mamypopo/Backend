@@ -29,7 +29,7 @@ export default class InformationController {
 
       if ('picture' in req.files) {
         const { name, text } = req.body as { name: string, text: string };
-        const { firstName, lastName } = req.user ?? {};
+        const { firstName, lastName } = req.user!;
 
         await this.informationService.createInformation(
           {
@@ -51,7 +51,7 @@ export default class InformationController {
       }
       res.status(400).send({
         message: 'error',
-        cause: 'invalid file key',
+        cause: 'invalid file key. only picture key accept',
       });
     } catch (error) {
       next(error);
