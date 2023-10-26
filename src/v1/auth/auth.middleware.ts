@@ -15,7 +15,7 @@ const validateToken = (req: Request, res: Response, next: NextFunction) => {
       return;
     }
 
-    const [schema, token] = authHeader.split('');
+    const [schema, token] = authHeader.split(' ');
 
     if (!schema) {
       res.status(401).send({
