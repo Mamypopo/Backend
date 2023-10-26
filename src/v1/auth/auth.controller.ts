@@ -55,12 +55,12 @@ export default class AuthController {
 
   async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
-      const student = await this.authService.getUserProfile(req.user!.id ?? 0);
+      const user = await this.authService.getUserProfile(req.user!.id ?? 0);
 
       res.status(200).send({
         message: 'success',
         result: {
-          student,
+          user,
         },
         cause: '-',
       });
