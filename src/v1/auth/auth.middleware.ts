@@ -49,7 +49,6 @@ const validateToken = (req: Request, res: Response, next: NextFunction) => {
     if (error instanceof TokenExpiredError) {
       res.status(401).send({
         message: 'unauthorized',
-        result: null,
         cause: 'token expired',
       });
       return;
