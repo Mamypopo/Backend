@@ -25,26 +25,10 @@ export default class AuthController {
         cause: '-',
       });
     } catch (error: unknown) {
-      if (error instanceof InvalidPasswordError) {
+      if (error instanceof InvalidPasswordError || error instanceof InvalidEmailError) {
         res.status(401).send({
           message: 'unauthorized',
-          cause: 'invalid password',
-        });
-        return;
-      }
-
-      if (error instanceof InvalidEmailError) {
-        res.status(401).send({
-          message: 'unauthorized',
-          cause: 'invalid email',
-        });
-        return;
-      }
-
-      if (error instanceof InvalidIdError) {
-        res.status(401).send({
-          message: 'unauthorized',
-          cause: 'invalid id',
+          cause: 'invalid email or password',
         });
         return;
       }
