@@ -38,6 +38,7 @@ export default class AuthRepository {
                  password,
                  firstName,
                  lastName,
+                 role,
                  faculty,
                  branch,
                  phone,
