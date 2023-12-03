@@ -7,6 +7,7 @@ import InvalidPasswordError from './error/invalid-password.error';
 import InvalidEmailError from './error/invalid-email.error';
 import StudentService from '../student/student.service';
 import TeacherService from '../teacher/teacher.service';
+import FileManager from '../common/file-manager';
 
 type UserWithoutPassword = Omit<UserModel, 'password'>;
 
@@ -14,6 +15,8 @@ export default class AuthService {
   protected authRepo = new AuthRepository();
 
   private tokenManager = new TokenManager();
+
+  private fileManager = new FileManager();
 
   public async authenticateByEmailAndPassword(email: string, password: string) {
     const user = await this.authRepo.getUserByEmail(email);
@@ -48,15 +51,15 @@ export default class AuthService {
     throw new InvalidIdError();
   }
 
-  public async createUser(user: UserModel) {
+  public async createUser(user: UserModel, file: Express.Multer.File) {
     const encryptPass = await bcrypt.hash(user.password!, 10);
     let userId = 0;
     const newUser = { ...user };
     newUser.password = encryptPass;
     if (user.role === 'student') {
-      userId = await new StudentService().createStudent(newUser);
+      userId = await new StudentService().createStudent(newUser, file);
     } else if (user.role === 'teacher') {
-      userId = await new TeacherService().createTeacher(newUser);
+      userId = await new TeacherService().createTeacher(newUser, file);
     }
 
     const userWithoutPass: UserWithoutPassword = { ...user };

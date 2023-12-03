@@ -2,8 +2,11 @@ import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import { main as db } from '../../database';
 import User, { NewUser } from '../common/user/user.base';
 import DuplicateUserError from '../common/error/duplicate-user.error';
+import FileManager from '../common/file-manager';
 
 export default class StudentService {
+  fileManager = new FileManager();
+
   public async getUserByEmail(email: string): Promise<User | undefined> {
     const sql = `SELECT
                  id,
@@ -44,7 +47,7 @@ export default class StudentService {
     return teacher as User;
   }
 
-  public async createStudent(student: NewUser) {
+  public async createStudent(student: NewUser, file: Express.Multer.File) {
     let connection = null;
     try {
       const userSql = 'INSERT INTO users SET email = ?, password = ?, first_name = ?, last_name = ?, role = ?';
@@ -72,6 +75,15 @@ export default class StudentService {
         student.phone,
       ]);
 
+      const fileName = `/student/${insertId}.${file.originalname.split('.')[file.originalname.split('.').length - 1]}`;
+
+      await this.fileManager.writeFile(fileName, file);
+
+      await connection.query('UPDATE users SET profile_img = ? WHERE id = ?', [
+        fileName,
+        insertId,
+      ]);
+
       await connection.commit();
       connection.release();
       return insertId;
@@ -86,5 +98,14 @@ export default class StudentService {
       }
       throw error;
     }
+  }
+
+  public async updateFileName(studentId: number | string, fileName: string) {
+    const sql = 'UPDATE users SET profile_img = ? WHERE id = ?';
+
+    await db.query(sql, [
+      fileName,
+      studentId,
+    ]);
   }
 }

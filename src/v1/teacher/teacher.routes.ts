@@ -1,6 +1,7 @@
 import RouterBase from '../common/routes.base';
 
 import validateToken, { validateRole } from '../auth/auth.middleware';
+import TeacherController from './teacher.controller';
 
 export default class TeacherRoute extends RouterBase {
   constructor() {
@@ -9,7 +10,7 @@ export default class TeacherRoute extends RouterBase {
   }
 
   protected setupRoute(): void {
-    this.router.get('/getAllTeacher', validateToken, validateRole(['admin']));
+    this.router.get('/getAllTeacher', validateToken, validateRole(['admin']), new TeacherController().getAllTecher);
 
     this.router.post('/addTeacher', validateToken, validateRole(['admin']));
   }

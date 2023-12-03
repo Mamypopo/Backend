@@ -11,7 +11,7 @@ export default interface User {
   phone: string | null,
   lineId: string | null,
   facebookName: string | null,
-  picture: string | null
+  profileImg: string | null
 }
 
 export type NewUser = Omit<User, 'id'>;

@@ -62,15 +62,18 @@ export default class AuthController {
 
   async register(req: Request, res: Response, next: NextFunction) {
     try {
-      const { user, token } = await this.authService.createUser(req.body);
-      res.status(200).send({
-        status: 'success',
-        result: {
-          user, token,
-        },
-        message: '-',
-        cause: '-',
-      });
+      if (req.files) {
+        const file = req.files as { [fieldname: string]: Express.Multer.File[] };
+        const { user, token } = await this.authService.createUser(req.body, file['picture'][0]);
+        res.status(200).send({
+          status: 'success',
+          result: {
+            user, token,
+          },
+          message: '-',
+          cause: '-',
+        });
+      }
     } catch (error: unknown) {
       if (error instanceof DuplicateUserError) {
         res.status(400).send({
