@@ -17,7 +17,7 @@ export default class AuthRepository {
                  branch,
                  phone,
                  lineId,
-                 picture,
+                 profileImg,
                  facebookName
                  FROM vUser
                  WHERE email = ?`;
@@ -43,7 +43,7 @@ export default class AuthRepository {
                  branch,
                  phone,
                  lineId,
-                 picture,
+                 profileImg,
                  facebookName
                  FROM vUser
                  WHERE id = ?`;
