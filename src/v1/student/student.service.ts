@@ -134,8 +134,6 @@ export default class StudentService {
       await this.fileManager.writeFile(fileName, file);
     }
 
-    // const encryptPassword = await bcrypt.hash(student.password!, 10);
-
     await db.query(userSql, [
       student.firstName,
       student.lastName,
@@ -151,5 +149,11 @@ export default class StudentService {
       student.phone,
       student.id,
     ]);
+  }
+
+  async updatePassword(password: string, userId: string) {
+    const encryptPassword = await bcrypt.hash(password, 10);
+
+    // update table users;
   }
 }
