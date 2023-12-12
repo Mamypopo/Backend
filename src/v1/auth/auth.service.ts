@@ -29,6 +29,10 @@ export default class AuthService {
 
         const token = this.tokenManager.generateToken(userWithoutPass);
 
+        userWithoutPass.profileImg = await this.fileManager.getFileBase64(
+          userWithoutPass.profileImg!,
+        );
+
         return {
           user: userWithoutPass,
           token,
@@ -45,6 +49,9 @@ export default class AuthService {
     const user = await this.authRepo.getUserById(userId);
 
     if (user) {
+      user.profileImg = await this.fileManager.getFileBase64(
+        user.profileImg!,
+      );
       return user;
     }
 

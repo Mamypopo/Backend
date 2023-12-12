@@ -13,5 +13,7 @@ export default class InformationRoute extends RouterBase {
     this.router.get('/getAllInformation', this.informationController.getAllInformation.bind(this.informationController));
 
     this.router.post('/addInformation', this.informationController.addInformation.bind(this.informationController));
+
+    this.router.post('/updateInformation');
   }
 }

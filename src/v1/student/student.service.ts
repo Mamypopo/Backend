@@ -1,4 +1,5 @@
 import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
+import bcrypt from 'bcrypt';
 import { main as db } from '../../database';
 import User, { NewUser } from '../common/user/user.base';
 import DuplicateUserError from '../common/error/duplicate-user.error';
@@ -106,6 +107,49 @@ export default class StudentService {
     await db.query(sql, [
       fileName,
       studentId,
+    ]);
+  }
+
+  public async updateStudent(student: User, file?: Express.Multer.File) {
+    const userSql = `UPDATE users SET
+                     first_name = ?,
+                     last_name = ?
+                     WHERE id = ?`;
+    const studentSql = `UPDATE students SET
+                        student_id = ?,
+                        faculty = ?,
+                        branch = ?,
+                        line_id = ?,
+                        facebook_name = ?,
+                        phone = ?
+                        WHERE user_id = ?`;
+
+    // upload file
+    // update table users
+    // update table students
+
+    if (file) {
+      const fileName = `/student/${student.id}.${file.originalname.split('.')[file.originalname.split('.').length - 1]}`;
+
+      await this.fileManager.writeFile(fileName, file);
+    }
+
+    // const encryptPassword = await bcrypt.hash(student.password!, 10);
+
+    await db.query(userSql, [
+      student.firstName,
+      student.lastName,
+      student.id,
+    ]);
+
+    await db.query(studentSql, [
+      student.studentId,
+      student.faculty,
+      student.branch,
+      student.lineId,
+      student.facebookName,
+      student.phone,
+      student.id,
     ]);
   }
 }

@@ -6,7 +6,7 @@ export default class FileManager {
   }
 
   async getFileBase64(fileName: string) {
-    const file = await fs.readFile(fileName);
+    const file = await fs.readFile(`./upload${fileName}`);
 
     return file.toString('base64');
   }

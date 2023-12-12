@@ -1,3 +1,4 @@
+import validateToken from './auth/auth.middleware';
 import AuthRoute from './auth/auth.routes';
 import RouterBase from './common/routes.base';
 import InformationRoute from './information/information.routes';
@@ -12,8 +13,8 @@ export default class V1Route extends RouterBase {
 
   protected setupRoute(): void {
     this.router.use('/teachers', new TeacherRoute().getRouter());
-    this.router.use('/students', new StudentRoute().getRouter());
-    this.router.use('/informations', new InformationRoute().getRouter());
+    this.router.use('/students', validateToken, new StudentRoute().getRouter());
+    this.router.use('/informations', validateToken, new InformationRoute().getRouter());
     // this.router.use('/admins', new AdminRoute().getRouter());
     this.router.use('/auth', new AuthRoute().getRouter());
   }

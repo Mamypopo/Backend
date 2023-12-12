@@ -2,11 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import InformationService from './information.service';
 
 export default class InformationController {
-  private informationService = new InformationService();
-
   async getAllInformation(req: Request, res: Response, next: NextFunction) {
     try {
-      const informations = await this.informationService.getInformations();
+      const informationService = new InformationService();
+      const informations = await informationService.getInformations();
       res.status(200).send({
         message: 'success',
         result: informations,
@@ -19,6 +18,7 @@ export default class InformationController {
 
   async addInformation(req: Request, res: Response, next: NextFunction) {
     try {
+      const informationService = new InformationService();
       if (!req.files) {
         res.status(400).send({
           message: 'error',
@@ -31,7 +31,7 @@ export default class InformationController {
         const { name, text } = req.body as { name: string, text: string };
         const { firstName, lastName } = req.user!;
 
-        await this.informationService.createInformation(
+        await informationService.createInformation(
           {
             name,
             text,
