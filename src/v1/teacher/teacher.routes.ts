@@ -10,7 +10,7 @@ export default class TeacherRoute extends RouterBase {
   }
 
   protected setupRoute(): void {
-    this.router.get('/getAllTeacher', validateToken, validateRole(['admin']), new TeacherController().getAllTecher);
+    this.router.get('/getAllTeacher', validateToken, new TeacherController().getAllTecher);
 
     this.router.post('/addTeacher', validateToken, validateRole(['admin']));
   }
