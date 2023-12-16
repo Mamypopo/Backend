@@ -4,7 +4,7 @@ import fs from 'fs/promises';
 import { main as db } from '../../database';
 import User, { NewUser } from '../common/user/user.base';
 import FileManager from '../common/file-manager';
-
+import bcrypt from 'bcrypt';
 export default class TeacherService {
   private fileManager = new FileManager();
 
@@ -106,4 +106,60 @@ export default class TeacherService {
       throw error;
     }
   }
+
+  public async updateFileName(fileName: string) {
+    const sql = 'UPDATE users SET profile_img = ? WHERE id = ?';
+
+    await db.query(sql, [
+      fileName,
+    
+    ]);
+  }
+
+  public async updateTeacher(teacher: User, file?: Express.Multer.File) {
+    const userSql = `UPDATE users SET
+                     first_name = ?,
+                     last_name = ?
+                     WHERE id = ?`;
+    const teacherSql = `UPDATE teachers SET
+                        faculty = ?,
+                        branch = ?,
+                        line_id = ?,
+                        facebook_name = ?,
+                        phone = ?
+                        WHERE user_id = ?`;
+
+    // upload file
+    // update table users
+    // update table students
+
+    if (file) {
+      const fileName = `/teacher/${teacher.id}.${file.originalname.split('.')[file.originalname.split('.').length - 1]}`;
+
+      await this.fileManager.writeFile(fileName, file);
+    }
+
+    await db.query(userSql, [
+      teacher.firstName,
+      teacher.lastName,
+      teacher.id,
+    ]);
+
+    await db.query(teacherSql, [
+      teacher.faculty,
+      teacher.branch,
+      teacher.lineId,
+      teacher.facebookName,
+      teacher.phone,
+      teacher.id,
+    ]);
+  }
+
+  async updatePassword(password: string, userId: string) {
+    const encryptPassword = await bcrypt.hash(password, 10);
+
+    // update table users;
+  }
 }
+
+
