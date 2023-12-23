@@ -1,14 +1,12 @@
-import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import bcrypt from 'bcrypt';
-import { main as db } from '../../database';
-import User, { NewUser } from '../common/user/user.base';
-import DuplicateUserError from '../common/error/duplicate-user.error';
-import FileManager from '../common/file-manager';
+import { main as db } from '../../database.js';
+import DuplicateUserError from '../common/error/duplicate-user.error.js';
+import FileManager from '../common/file-manager.js';
 
 export default class StudentService {
   fileManager = new FileManager();
 
-  public async getUserByEmail(email: string): Promise<User | undefined> {
+  async getUserByEmail(email) {
     const sql = `SELECT
                  id,
                  email,
@@ -23,12 +21,12 @@ export default class StudentService {
                  FROM vuser
                  WHERE email = ?`;
 
-    const [[teacher]] = await db.query<RowDataPacket[]>(sql, email);
+    const [[teacher]] = await db.query(sql, email);
 
-    return teacher as User;
+    return teacher;
   }
 
-  public async getUserById(id: number): Promise<User | undefined> {
+  async getUserById(id) {
     const sql = `SELECT
                  id,
                  email,
@@ -43,12 +41,12 @@ export default class StudentService {
                  FROM vuser
                  WHERE id = ?`;
 
-    const [[teacher]] = await db.query<RowDataPacket[]>(sql, id);
+    const [[teacher]] = await db.query(sql, id);
 
-    return teacher as User;
+    return teacher;
   }
 
-  public async createStudent(student: NewUser, file: Express.Multer.File) {
+  async createStudent(student, file) {
     let connection = null;
     try {
       const userSql = 'INSERT INTO users SET email = ?, password = ?, first_name = ?, last_name = ?, role = ?';
@@ -64,7 +62,7 @@ export default class StudentService {
         student.firstName,
         student.lastName,
         student.role,
-      ]) as [ResultSetHeader, FieldPacket[]];
+      ]);
 
       await connection.query(teacherSql, [
         insertId,
@@ -90,7 +88,7 @@ export default class StudentService {
       return insertId;
     } catch (error) {
       if (connection) {
-        const dbError = error as { code: string };
+        const dbError = error;
         await connection.rollback();
         connection.release();
         if (dbError.code === 'ER_DUP_ENTRY') {
@@ -101,7 +99,7 @@ export default class StudentService {
     }
   }
 
-  public async updateFileName(studentId: number | string, fileName: string) {
+  async updateFileName(studentId, fileName) {
     const sql = 'UPDATE users SET profile_img = ? WHERE id = ?';
 
     await db.query(sql, [
@@ -110,7 +108,7 @@ export default class StudentService {
     ]);
   }
 
-  public async updateStudent(student: User, file?: Express.Multer.File) {
+  async updateStudent(student, file) {
     const userSql = `UPDATE users SET
                      first_name = ?,
                      last_name = ?
@@ -151,7 +149,7 @@ export default class StudentService {
     ]);
   }
 
-  async updatePassword(password: string, userId: string) {
+  async updatePassword(password, userId) {
     const encryptPassword = await bcrypt.hash(password, 10);
 
     // update table users;

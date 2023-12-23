@@ -1,14 +1,13 @@
 /* eslint-disable no-await-in-loop */
-import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import fs from 'fs/promises';
-import { main as db } from '../../database';
-import User, { NewUser } from '../common/user/user.base';
-import FileManager from '../common/file-manager';
 import bcrypt from 'bcrypt';
-export default class TeacherService {
-  private fileManager = new FileManager();
+import { main as db } from '../../database.js';
+import FileManager from '../common/file-manager.js';
 
-  public async getAllTeacher() {
+export default class TeacherService {
+  fileManager = new FileManager();
+
+  async getAllTeacher() {
     const sql = `SELECT
                  id,
                  email,
@@ -24,11 +23,11 @@ export default class TeacherService {
                  FROM vuser
                  WHERE role = 'teacher'`;
 
-    const [result] = await db.query<RowDataPacket[]>(sql);
+    const [result] = await db.query(sql);
 
-    const users = result as User[];
+    const users = result;
 
-    const mapUser: User[] = [];
+    const mapUser = [];
 
     for (let index = 0; index < result.length; index += 1) {
       const user = users[index];
@@ -39,7 +38,7 @@ export default class TeacherService {
     return mapUser;
   }
 
-  public async getUserById(id: number): Promise<User | undefined> {
+  async getUserById(id) {
     const sql = `SELECT
                  id,
                  email,
@@ -54,12 +53,12 @@ export default class TeacherService {
                  FROM vuser
                  WHERE id = ?`;
 
-    const [[teacher]] = await db.query<RowDataPacket[]>(sql, id);
+    const [[teacher]] = await db.query(sql, id);
 
-    return teacher as User;
+    return teacher;
   }
 
-  public async createTeacher(teacher: NewUser, file: Express.Multer.File) {
+  async createTeacher(teacher, file) {
     let connection = null;
     try {
       const userSql = 'INSERT INTO users SET email = ?, password = ?, first_name = ?, last_name = ?, role = ?';
@@ -75,7 +74,7 @@ export default class TeacherService {
         teacher.firstName,
         teacher.lastName,
         teacher.role,
-      ]) as [ResultSetHeader, FieldPacket[]];
+      ]);
 
       await connection.query(teacherSql, [
         insertId,
@@ -107,16 +106,15 @@ export default class TeacherService {
     }
   }
 
-  public async updateFileName(fileName: string) {
+  async updateFileName(fileName) {
     const sql = 'UPDATE users SET profile_img = ? WHERE id = ?';
 
     await db.query(sql, [
       fileName,
-    
     ]);
   }
 
-  public async updateTeacher(teacher: User, file?: Express.Multer.File) {
+  async updateTeacher(teacher, file) {
     const userSql = `UPDATE users SET
                      first_name = ?,
                      last_name = ?
@@ -155,11 +153,9 @@ export default class TeacherService {
     ]);
   }
 
-  async updatePassword(password: string, userId: string) {
+  async updatePassword(password, userId) {
     const encryptPassword = await bcrypt.hash(password, 10);
 
     // update table users;
   }
 }
-
-

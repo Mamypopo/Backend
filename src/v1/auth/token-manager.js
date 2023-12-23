@@ -1,17 +1,17 @@
 import jwt from 'jsonwebtoken';
-import config from '../../app.config';
-import TokenExpiredError from './error/token-expired.error';
+import config from '../../app.config.js';
+import TokenExpiredError from './error/token-expired.error.js';
 
 export default class TokenManager {
-  private secretKey = config.app.authenKey as jwt.Secret;
+  secretKey = config.app.authenKey;
 
-  generateToken(data: string | object | Buffer): string {
+  generateToken(data) {
     return jwt.sign(data, this.secretKey, {
       expiresIn: '3h',
     });
   }
 
-  validateToken(token: string): string | jwt.JwtPayload {
+  validateToken(token) {
     try {
       return jwt.verify(token, this.secretKey);
     } catch (error) {

@@ -1,11 +1,11 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
-import config from './app.config';
-import V1Route from './v1/index.routes';
+import config from './app.config.js';
+import V1Router from './v1/index.routes.js';
 
 class Main {
-  private app = express();
+  app = express();
 
   constructor() {
     this.setupMiddleware();
@@ -14,7 +14,7 @@ class Main {
     this.setupGlobalErrorHandler();
   }
 
-  private setupMulter() {
+  setupMulter() {
     const upload = multer({
       storage: multer.memoryStorage(),
     });
@@ -30,15 +30,14 @@ class Main {
     ]));
   }
 
-  private setupMiddleware() {
+  setupMiddleware() {
     this.app.use(cors());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
   }
 
-  private setupGlobalErrorHandler() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    this.app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+  setupGlobalErrorHandler() {
+    this.app.use((error, req, res, next) => {
       console.error('unknown error: ', error);
       res.status(500).send({
         message: 'internal error',
@@ -47,11 +46,11 @@ class Main {
     });
   }
 
-  private setupRoute() {
-    this.app.use('/api/v1', new V1Route().getRouter());
+  setupRoute() {
+    this.app.use('/api/v1', V1Router);
   }
 
-  public run() {
+  run() {
     this.app.listen(config.app.port, () => {
       console.info(`[Jit asa web service] run on ${config.app.env} env and using port ${config.app.port}`);
     });

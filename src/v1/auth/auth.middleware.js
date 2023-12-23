@@ -1,9 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
-import TokenExpiredError from './error/token-expired.error';
-import TokenManager from './token-manager';
-import UserBase from '../common/user/user.base';
+import TokenExpiredError from './error/token-expired.error.js';
+import TokenManager from './token-manager.js';
 
-const validateToken = (req: Request, res: Response, next: NextFunction) => {
+const validateToken = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -43,7 +41,7 @@ const validateToken = (req: Request, res: Response, next: NextFunction) => {
       return;
     }
 
-    req.user = decodedToken as UserBase;
+    req.user = decodedToken;
     next();
   } catch (error) {
     if (error instanceof TokenExpiredError) {
@@ -60,9 +58,9 @@ const validateToken = (req: Request, res: Response, next: NextFunction) => {
 
 export default validateToken;
 
-export const validateRole = (roles: string[]) => {
-  const handler = (req: Request, res: Response, next: NextFunction) => {
-    const { role } = req.user!;
+export const validateRole = (roles) => {
+  const handler = (req, res, next) => {
+    const { role } = req.user;
     if (roles.includes(role)) {
       next();
       return;

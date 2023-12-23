@@ -1,10 +1,8 @@
 import fs from 'fs/promises';
-import { RowDataPacket, ResultSetHeader } from 'mysql2';
-import { main as db } from '../../database';
-import { InformationModel, NewInformationModel } from './information.model';
+import { main as db } from '../../database.js';
 
 export default class InformationService {
-  async updateFile(picture: { name: string, data: Buffer }, informationId: number) {
+  async updateFile(picture, informationId) {
     const splitPictureName = picture.name.split('.');
 
     const fileName = `information_${informationId}.${splitPictureName.at(splitPictureName.length - 1)}`;
@@ -31,7 +29,7 @@ export default class InformationService {
                  updated_at as updatedAt
                  FROM informations`;
 
-    const [informations] = await db.query<RowDataPacket[]>(sql);
+    const [informations] = await db.query(sql);
 
     const mapInformations = await Promise.all(informations.map(async (data) => {
       const temp = { ...data };
@@ -46,8 +44,8 @@ export default class InformationService {
   }
 
   async createInformation(
-    information: NewInformationModel,
-    picture: { name: string, data: Buffer },
+    information,
+    picture,
   ) {
     const sql = `INSERT INTO informations SET
                  name = ?,
@@ -55,7 +53,7 @@ export default class InformationService {
                  text = ?,
                  created_by = ?`;
 
-    const [{ insertId }] = await db.query<ResultSetHeader>(sql, [
+    const [{ insertId }] = await db.query(sql, [
       information.name,
       information.picture,
       information.text,
@@ -65,7 +63,7 @@ export default class InformationService {
     await this.updateFile(picture, insertId);
   }
 
-  async updateInformation(information: InformationModel, picture?: { name: string, data: Buffer }) {
+  async updateInformation(information, picture) {
     const sql = `UPDATE informations SET
                  name = ?,
                  picture = ?,
@@ -73,7 +71,7 @@ export default class InformationService {
                  created_by = ?
                  WHERE id = ?`;
 
-    await db.query<ResultSetHeader>(sql, [
+    await db.query(sql, [
       information.name,
       information.picture,
       information.text,
@@ -86,9 +84,9 @@ export default class InformationService {
     }
   }
 
-  async deleteInformation(informationId: number) {
+  async deleteInformation(informationId) {
     const sql = 'DELETE FROM informations WHERE id = ? LIMIT 1';
 
-    await db.query<ResultSetHeader>(sql, informationId);
+    await db.query(sql, informationId);
   }
 }

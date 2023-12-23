@@ -1,19 +1,4 @@
-import { PoolOptions } from 'mysql2';
-
-type AppConfig = {
-  env: string,
-  port: number,
-  authenKey: string,
-};
-
-type Config = {
-  app: AppConfig,
-  db: {
-    main: PoolOptions,
-  },
-};
-
-function checkEnvVariable(key: string): string {
+function checkEnvVariable(key) {
   const variable = process.env[key];
 
   if (!variable) {
@@ -23,7 +8,7 @@ function checkEnvVariable(key: string): string {
   return variable;
 }
 
-const config: Config = {
+const config = {
   app: {
     env: checkEnvVariable('NODE_ENV'),
     port: Number(checkEnvVariable('PORT')),

@@ -1,11 +1,9 @@
-import { RowDataPacket } from 'mysql2/typings/mysql/lib/protocol/packets/RowDataPacket';
-import { main } from '../../database';
-import UserBase from '../common/user/user.base';
+import { main } from '../../database.js';
 
 export default class AuthRepository {
-  private db = main;
+  db = main;
 
-  async getUserByEmail(email: string): Promise<UserBase | undefined> {
+  async getUserByEmail(email) {
     const sql = `SELECT
                  id,
                  email,
@@ -23,16 +21,16 @@ export default class AuthRepository {
                  FROM vUser
                  WHERE email = ?`;
 
-    const [[user]] = await this.db.query<RowDataPacket[]>(sql, email);
+    const [[user]] = await this.db.query(sql, email);
 
     if (user) {
-      return user as UserBase;
+      return user;
     }
 
     return undefined;
   }
 
-  async getUserById(id: number): Promise<UserBase | undefined> {
+  async getUserById(id) {
     const sql = `SELECT
                  id,
                  email,
@@ -50,10 +48,10 @@ export default class AuthRepository {
                  FROM vUser
                  WHERE id = ?`;
 
-    const [[user]] = await this.db.query<RowDataPacket[]>(sql, id);
+    const [[user]] = await this.db.query(sql, id);
 
     if (user) {
-      return user as UserBase;
+      return user;
     }
 
     return undefined;
