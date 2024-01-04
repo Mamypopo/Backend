@@ -7,7 +7,7 @@ export default class TokenManager {
 
   generateToken(data) {
     return jwt.sign(data, this.secretKey, {
-      expiresIn: '3h',
+      expiresIn: '10h',
     });
   }
 
