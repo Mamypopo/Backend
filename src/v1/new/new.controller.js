@@ -14,6 +14,18 @@ export const getAllNewHandler = async (req, res, next) => {
   }
 };
 
+export const getNewByIdHandler = async (req, res, next) => {
+  try {
+    const newService = new NewService();
+    const result = await newService.getNewById(req.body.newId);
+    res.status(200).send({
+      result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const addNewHandler = async (req, res, next) => {
   try {
     const newService = new NewService();

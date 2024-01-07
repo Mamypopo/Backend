@@ -1,16 +1,17 @@
-import RouterBase from '../common/routes.base';
+import { Router } from 'express';
+import * as ActivityController from './activity.controller.js';
+import validateToken, { validateRole } from '../auth/auth.middleware.js';
 
-export default class NewRouter extends RouterBase {
-  constructor() {
-    super(false);
-    this.setupRoute();
-  }
+const router = Router();
 
-  protected setupRoute(): void {
-    this.router.get('/getAllActivity');
+router.get('/getAllActivity', ActivityController.getAllActivityHanlder);
 
-    this.router.post('/addActivity');
+router.post('/getActivityById', ActivityController.getActivityByIdHandler);
 
-    this.router.post('/updateActivity');
-  }
-}
+router.post('/addActivity', validateToken, validateRole(['teacher', 'admin']), ActivityController.addActivityHandler);
+
+router.post('/updateActivity', validateToken, validateRole(['teacher', 'admin']), ActivityController.updateActivityHandler);
+
+router.post('/deleteActivity', validateToken, validateRole(['teacher', 'admin']), ActivityController.deleteActivityHandler);
+
+export default router;

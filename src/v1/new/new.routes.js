@@ -5,6 +5,7 @@ import validateToken, { validateRole } from '../auth/auth.middleware.js';
 const router = Router();
 
 router.get('/getAllNew', NewController.getAllNewHandler);
+router.post('/getNewById', NewController.getNewByIdHandler);
 router.post('/addNew', validateToken, validateRole(['admin', 'teacher']), NewController.addNewHandler);
 router.post('/updateNew', validateToken, validateRole(['admin', 'teacher']), NewController.updateNewHandler);
 router.post('/deleteNew', validateToken, validateRole(['admin', 'teacher']), NewController.deleteNewHanlder);

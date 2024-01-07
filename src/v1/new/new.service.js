@@ -41,7 +41,7 @@ export default class NewService {
     const mapNews = await Promise.all(news.map(async (data) => {
       const temp = { ...data };
       if (temp.picture) {
-        temp.picture = (await fs.readFile(`./upload/news/${data.picture}`)).toString('base64');
+        temp.picture = await new FileManager().getFileBase64(temp.picture);
       }
 
       return temp;
@@ -50,13 +50,38 @@ export default class NewService {
     return mapNews;
   }
 
+  async getNewById(newId) {
+    const sql = `SELECT
+                 id,
+                 topic,
+                 picture,
+                 content,
+                 created_by as createdBy,
+                 updated_by as updatedBy,
+                 created_at as createdAt,
+                 updated_at as updatedAt
+                 FROM news
+                 WHERE id = ?
+                 ORDER BY created_at DESC`;
+
+    /**
+     * @type { [import('mysql2').RowDataPacket[], import('mysql2').FieldPacket[]]}
+     */
+    const [[newData]] = await db.query(sql, newId);
+
+    if (newData.picture) {
+      newData.picture = await new FileManager().getFileBase64(newData.picture);
+    }
+
+    return newData;
+  }
+
   async createNew(
     newData,
     picture,
   ) {
     const sql = `INSERT INTO news SET
                  topic = ?,
-                 picture = ?,
                  content = ?,
                  created_by = ?`;
 
@@ -65,7 +90,6 @@ export default class NewService {
      */
     const [{ insertId }] = await db.query(sql, [
       newData.topic,
-      newData.picture,
       newData.content,
       newData.createdBy,
     ]);
