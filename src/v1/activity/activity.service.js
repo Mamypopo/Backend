@@ -49,8 +49,27 @@ export default class ActivityService {
     }));
   }
 
-  getActivityParticipant(activityId) {
-    const sql = ``
+  async getActivityComment(activityId) {
+    const sql = `SELECT activity_comments.id,
+                 u.profile_img as profileImg,
+                 CONCAT_WS(' ', u.first_name, u.last_name) as createdBy,
+                 comment,
+                 created_at as createdAt,
+                 updated_at as updatedAt
+                 FROM activity_comments
+                 JOIN jit_asa.users u on u.id = activity_comments.user_id
+                 WHERE activity_id = ? `;
+
+    /**
+     * @type { [import('mysql2').RowDataPacket[], import('mysql2').FieldPacket[]]}
+     */
+    const [result] = await db.query(sql, activityId);
+
+    return Promise.all(result.map(async (item) => {
+      const data = { ...item };
+      data.profileImg = await this.fileManager.getFileBase64(data.profileImg);
+      return data;
+    }));
   }
 
   async getActivityById(activityId) {
@@ -76,6 +95,8 @@ export default class ActivityService {
     const [[result]] = await db.query(sql, activityId);
 
     result.picture = await this.fileManager.getFileBase64(result.picture);
+
+    result.comments = await this.getActivityComment(activityId);
 
     return result;
   }
@@ -109,6 +130,19 @@ export default class ActivityService {
     await this.updateFile(picture, insertId);
   }
 
+  async createComment(activityId, userId, comment) {
+    const sql = `INSERT INTO activity_comments SET
+                 user_id = ?,
+                 activity_id = ?,
+                 comment = ?`;
+
+    await db.query(sql, [
+      userId,
+      activityId,
+      comment,
+    ]);
+  }
+
   async updateActivity(activity, picture) {
     const sql = `UPDATE activities SET
                  name = ?,
@@ -139,5 +173,11 @@ export default class ActivityService {
     const sql = 'UPDATE activities SET active_status = 0 WHERE id = ? LIMIT 1';
 
     await db.query(sql, activityId);
+  }
+
+  async deleteComment(commentId) {
+    const sql = 'DELETE FROM activity_comments WHERE id = ? LIMIT 1';
+
+    await db.query(sql, commentId);
   }
 }

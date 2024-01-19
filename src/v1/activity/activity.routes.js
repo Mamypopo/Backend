@@ -10,8 +10,12 @@ router.post('/getActivityById', ActivityController.getActivityByIdHandler);
 
 router.post('/addActivity', validateToken, validateRole(['teacher', 'admin']), ActivityController.addActivityHandler);
 
+router.post('/addComment', validateToken, ActivityController.addCommentHandler);
+
 router.post('/updateActivity', validateToken, validateRole(['teacher', 'admin']), ActivityController.updateActivityHandler);
 
 router.post('/deleteActivity', validateToken, validateRole(['teacher', 'admin']), ActivityController.deleteActivityHandler);
+
+router.post('/deleteComment', validateToken, ActivityController.deleteCommentHandler)
 
 export default router;
