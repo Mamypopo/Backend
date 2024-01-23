@@ -8,6 +8,8 @@ router.get('/getAllActivity', ActivityController.getAllActivityHanlder);
 
 router.post('/getActivityById', ActivityController.getActivityByIdHandler);
 
+router.get('/getByUserId', validateToken, validateRole(['teacher', 'admin']), ActivityController.getActivityByUserIdHandler);
+
 router.post('/addActivity', validateToken, validateRole(['teacher', 'admin']), ActivityController.addActivityHandler);
 
 router.post('/addComment', validateToken, ActivityController.addCommentHandler);
@@ -16,6 +18,6 @@ router.post('/updateActivity', validateToken, validateRole(['teacher', 'admin'])
 
 router.post('/deleteActivity', validateToken, validateRole(['teacher', 'admin']), ActivityController.deleteActivityHandler);
 
-router.post('/deleteComment', validateToken, ActivityController.deleteCommentHandler)
+router.post('/deleteComment', validateToken, ActivityController.deleteCommentHandler);
 
 export default router;

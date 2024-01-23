@@ -24,6 +24,17 @@ export const getActivityByIdHandler = async (req, res, next) => {
   }
 };
 
+export const getActivityByUserIdHandler = async (req, res, next) => {
+  try {
+    const result = await new ActivityService().getActivityByUserId(req.user.id);
+    res.status(200).send({
+      result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const addActivityHandler = async (req, res, next) => {
   try {
     if (!req.files) {
@@ -34,9 +45,7 @@ export const addActivityHandler = async (req, res, next) => {
       return;
     }
 
-    const { firstName, lastName } = req.user;
-
-    await new ActivityService().createActivity({ ...req.body, createdBy: `${firstName} ${lastName}` }, req.files.picture[0]);
+    await new ActivityService().createActivity({ ...req.body, createdBy: req.user.id }, req.files.picture[0]);
 
     res.status(200).send({
       result: 'success',
@@ -60,8 +69,7 @@ export const addCommentHandler = async (req, res, next) => {
 
 export const updateActivityHandler = async (req, res, next) => {
   try {
-    const { firstName, lastName } = req.user;
-    await new ActivityService().updateActivity({ ...req.body, updatedBy: `${firstName} ${lastName}` }, 'picture' in req.files ? req.files?.picture[0] : null);
+    await new ActivityService().updateActivity(req.body, 'picture' in req.files ? req.files?.picture[0] : null);
     res.status(200).send({
       result: 'success',
     });

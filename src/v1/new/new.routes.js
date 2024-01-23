@@ -6,6 +6,7 @@ const router = Router();
 
 router.get('/getAllNew', NewController.getAllNewHandler);
 router.post('/getNewById', NewController.getNewByIdHandler);
+router.get('/getByUserId', validateToken, validateRole(['admin', 'teacher']), NewController.getNewByUserIdHandler);
 router.post('/addNew', validateToken, validateRole(['admin', 'teacher']), NewController.addNewHandler);
 router.post('/updateNew', validateToken, validateRole(['admin', 'teacher']), NewController.updateNewHandler);
 router.post('/deleteNew', validateToken, validateRole(['admin', 'teacher']), NewController.deleteNewHanlder);

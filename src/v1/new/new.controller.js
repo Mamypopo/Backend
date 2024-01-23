@@ -26,6 +26,18 @@ export const getNewByIdHandler = async (req, res, next) => {
   }
 };
 
+export const getNewByUserIdHandler = async (req, res, next) => {
+  try {
+    const newService = new NewService();
+    const result = await newService.getNewByUserId(req.user.id);
+    res.status(200).send({
+      result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const addNewHandler = async (req, res, next) => {
   try {
     const newService = new NewService();
@@ -39,13 +51,12 @@ export const addNewHandler = async (req, res, next) => {
 
     if ('picture' in req.files) {
       const { content, topic } = req.body;
-      const { firstName, lastName } = req.user;
 
       await newService.createNew(
         {
           content,
           topic,
-          createdBy: `${firstName} ${lastName}`,
+          createdBy: req.user.id,
         },
         req.files.picture[0],
       );
@@ -67,7 +78,6 @@ export const addNewHandler = async (req, res, next) => {
 
 export const updateNewHandler = async (req, res, next) => {
   const { content, topic, id } = req.body;
-  const { firstName, lastName } = req.user;
 
   try {
     const newService = new NewService();
@@ -76,7 +86,6 @@ export const updateNewHandler = async (req, res, next) => {
         content,
         topic,
         id,
-        updatedBy: `${firstName} ${lastName}`,
       },
       'picture' in req.files ? req.files?.picture[0] : null,
     );

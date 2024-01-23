@@ -30,7 +30,6 @@ export default class ActivityService {
                  date,
                  time,
                  created_by as createdBy,
-                 updated_by as updatedBy,
                  created_at as createdAt,
                  updated_at as updatedAt
                  FROM activities
@@ -41,6 +40,35 @@ export default class ActivityService {
      * @type { [import('mysql2').RowDataPacket[], import('mysql2').FieldPacket[]]}
      */
     const [result] = await db.query(sql);
+
+    return Promise.all(result.map(async (item) => {
+      const data = { ...item };
+      data.picture = await this.fileManager.getFileBase64(data.picture);
+      return data;
+    }));
+  }
+
+  async getActivityByUserId(userId) {
+    const sql = `SELECT
+                 id,
+                 name,
+                 picture,
+                 detail,
+                 location,
+                 hour_gain as hourGain,
+                 date,
+                 time,
+                 created_by as createdBy,
+                 created_at as createdAt,
+                 updated_at as updatedAt
+                 FROM activities
+                 WHERE active_status = 1 AND created_by = ?
+                 ORDER BY created_at DESC`;
+
+    /**
+     * @type { [import('mysql2').RowDataPacket[], import('mysql2').FieldPacket[]]}
+     */
+    const [result] = await db.query(sql, [userId]);
 
     return Promise.all(result.map(async (item) => {
       const data = { ...item };
@@ -83,7 +111,6 @@ export default class ActivityService {
                  date,
                  time,
                  created_by as createdBy,
-                 updated_by as updatedBy,
                  created_at as createdAt,
                  updated_at as updatedAt
                  FROM activities
@@ -150,8 +177,8 @@ export default class ActivityService {
                  location = ?,
                  hour_gain = ?,
                  date = ?,
-                 time = ?,
-                 updated_by = ?`;
+                 time = ?
+                 WHERE id = ?`;
 
     await db.query(sql, [
       activity.name,
@@ -160,7 +187,6 @@ export default class ActivityService {
       activity.hourGain,
       new Date(activity.date).toLocaleDateString('sv-SE'),
       activity.time,
-      activity.updatedBy,
       activity.id,
     ]);
 

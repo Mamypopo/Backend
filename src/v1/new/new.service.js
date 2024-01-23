@@ -27,7 +27,6 @@ export default class NewService {
                  picture,
                  content,
                  created_by as createdBy,
-                 updated_by as updatedBy,
                  created_at as createdAt,
                  updated_at as updatedAt
                  FROM news
@@ -50,6 +49,36 @@ export default class NewService {
     return mapNews;
   }
 
+  async getNewByUserId(userId) {
+    const sql = `SELECT
+                 id,
+                 topic,
+                 picture,
+                 content,
+                 created_by as createdBy,
+                 created_at as createdAt,
+                 updated_at as updatedAt
+                 FROM news
+                 WHERE createdBy = ?
+                 ORDER BY created_at DESC`;
+
+    /**
+     * @type { [import('mysql2').RowDataPacket[], import('mysql2').FieldPacket[]]}
+     */
+    const [news] = await db.query(sql, userId);
+
+    const mapNews = await Promise.all(news.map(async (data) => {
+      const temp = { ...data };
+      if (temp.picture) {
+        temp.picture = await new FileManager().getFileBase64(temp.picture);
+      }
+
+      return temp;
+    }));
+
+    return mapNews;
+  }
+
   async getNewById(newId) {
     const sql = `SELECT
                  id,
@@ -57,7 +86,6 @@ export default class NewService {
                  picture,
                  content,
                  created_by as createdBy,
-                 updated_by as updatedBy,
                  created_at as createdAt,
                  updated_at as updatedAt
                  FROM news
@@ -100,14 +128,12 @@ export default class NewService {
   async updateNew(newData, picture) {
     const sql = `UPDATE news SET
                  topic = ?,
-                 content = ?,
-                 updated_by = ?
+                 content = ?
                  WHERE id = ?`;
 
     await db.query(sql, [
       newData.topic,
       newData.content,
-      newData.updatedBy,
       newData.id,
     ]);
 
