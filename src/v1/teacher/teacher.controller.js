@@ -22,9 +22,18 @@ export const updateTeacher = async (req, res, next) => {
     await service.updateTeacher(teacher, file);
 
     res.status(200).send({
-      message: 'success',
-      result: null,
-      cause: '-',
+      result: 'success',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteTeacher = async (req, res, next) => {
+  try {
+    await new TeacherService().deleteTeacher(req.body.teacherId);
+    res.status(200).send({
+      result: 'success',
     });
   } catch (error) {
     next(error);

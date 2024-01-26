@@ -1,10 +1,43 @@
+/* eslint-disable no-await-in-loop */
 import bcrypt from 'bcrypt';
+import fs from 'fs/promises';
 import { main as db } from '../../database.js';
 import DuplicateUserError from '../common/error/duplicate-user.error.js';
 import FileManager from '../common/file-manager.js';
 
 export default class StudentService {
   fileManager = new FileManager();
+
+  async getAllStudent() {
+    const sql = `SELECT
+                 id,
+                 email,
+                 password,
+                 firstName,
+                 lastName,
+                 faculty,
+                 branch,
+                 phone,
+                 lineId,
+                 facebookName,
+                 profileImg
+                 FROM vuser
+                 WHERE role = 'student'`;
+
+    const [result] = await db.query(sql);
+
+    const users = result;
+
+    const mapUser = [];
+
+    for (let index = 0; index < result.length; index += 1) {
+      const user = users[index];
+      user.profileImg = user.profileImg ? (await fs.readFile(`./upload${user.profileImg}`)).toString('base64') : '';
+      mapUser.push({ ...user });
+    }
+
+    return mapUser;
+  }
 
   async getUserByEmail(email) {
     const sql = `SELECT
@@ -147,11 +180,23 @@ export default class StudentService {
       student.phone,
       student.id,
     ]);
+
+    if (student?.password) {
+      await this.updatePassword(student.password, student.id);
+    }
   }
 
   async updatePassword(password, userId) {
-    const encryptPassword = await bcrypt.hash(password, 10);
+    const sql = 'UPDATE users SET password = ? WHERE id = ? LIMIT 1';
+    const encryptPass = await bcrypt.hash(password, 10);
 
-    // update table users;
+    await db.query(sql, [
+      encryptPass,
+      userId,
+    ]);
+  }
+
+  async deleteStudent(studentId) {
+    await db.query('DELETE FROM users WHERE id = ? LIMIT 1', studentId);
   }
 }

@@ -135,6 +135,11 @@ export default class TeacherService {
       const fileName = `/teacher/${teacher.id}.${file.originalname.split('.')[file.originalname.split('.').length - 1]}`;
 
       await this.fileManager.writeFile(fileName, file);
+
+      await db.query('UPDATE users SET profile_img = ? WHERE id = ?', [
+        fileName,
+        teacher.id,
+      ]);
     }
 
     await db.query(userSql, [
@@ -151,11 +156,23 @@ export default class TeacherService {
       teacher.phone,
       teacher.id,
     ]);
+
+    if (teacher?.password) {
+      await this.updatePassword(teacher.id, teacher.password);
+    }
   }
 
-  async updatePassword(password, userId) {
-    const encryptPassword = await bcrypt.hash(password, 10);
+  async deleteTeacher(teacherId) {
+    await db.query('DELETE FROM users WHERE id = ? LIMIT 1', teacherId);
+  }
 
-    // update table users;
+  async updatePassword(userId, password) {
+    const sql = 'UPDATE users SET password = ? WHERE id = ? LIMIT 1';
+    const encryptPass = await bcrypt.hash(password, 10);
+
+    await db.query(sql, [
+      encryptPass,
+      userId,
+    ]);
   }
 }
