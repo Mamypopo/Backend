@@ -15,6 +15,7 @@ export default class StudentService {
                  password,
                  firstName,
                  lastName,
+                 studentId,
                  faculty,
                  branch,
                  phone,
