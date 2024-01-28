@@ -1,5 +1,6 @@
 import { main as db } from '../../database.js';
 import FileManager from '../common/file-manager.js';
+import generatePDF from './activity-pdf.js';
 
 export default class ActivityService {
   fileManager = new FileManager();
@@ -100,6 +101,24 @@ export default class ActivityService {
     }));
   }
 
+  async getActivityParticipant(activityId) {
+    const sql = `SELECT
+                 activity_participants.id as id,
+                 approve_status as approveStatus,
+                 users.id as userId,
+                 students.student_id as studentId,
+                 users.first_name as firstName,
+                 users.last_name as lastName
+                 FROM activity_participants
+                 JOIN users ON users.id = activity_participants.student_id
+                 JOIN students ON students.user_id = users.id
+                 WHERE activity_id = ?`;
+
+    const [result] = await db.query(sql, activityId);
+
+    return result;
+  }
+
   async getActivityById(activityId) {
     const sql = `SELECT
                  id,
@@ -125,7 +144,47 @@ export default class ActivityService {
 
     result.comments = await this.getActivityComment(activityId);
 
+    result.participants = await this.getActivityParticipant(activityId);
+
     return result;
+  }
+
+  async getStudentActivity(studentId) {
+    const sql = `SELECT
+                 date,
+                 location,
+                 name,
+                 hour_gain as hourGain,
+                 activity_participants.update_status_by as updateStatusBy,
+                 activity_participants.approve_status as approveStatus
+                 FROM activities
+                 JOIN activity_participants ON activities.id = activity_participants.activity_id
+                 JOIN users ON activity_participants.student_id = users.id
+                 WHERE users.id = ?`;
+
+    const [result] = await db.query(sql, studentId);
+
+    return result;
+  }
+
+  async getStudentActivityDoc(studentId) {
+    const sql = `SELECT
+                 activities.name as activityName,
+                 date,
+                 location,
+                 name,
+                 hour_gain as hourGain,
+                 activity_participants.update_status_by as updateStatusBy
+                 FROM activities
+                 JOIN activity_participants ON activities.id = activity_participants.activity_id
+                 JOIN users ON activity_participants.student_id = users.id
+                 WHERE users.id = ? AND activity_participants.approve_status = 2`;
+
+    const [result] = await db.query(sql, studentId);
+
+    const doc = generatePDF(result);
+
+    return doc;
   }
 
   async createActivity(
@@ -170,6 +229,17 @@ export default class ActivityService {
     ]);
   }
 
+  async createPaticipant(activityId, studentId) {
+    const sql = `INSERT INTO activity_participants SET
+                 activity_id = ?,
+                 student_id = ?`;
+
+    await db.query(sql, [
+      activityId,
+      studentId,
+    ]);
+  }
+
   async updateActivity(activity, picture) {
     const sql = `UPDATE activities SET
                  name = ?,
@@ -205,5 +275,17 @@ export default class ActivityService {
     const sql = 'DELETE FROM activity_comments WHERE id = ? LIMIT 1';
 
     await db.query(sql, commentId);
+  }
+
+  async updateParticipantStatus(participantId, approveStatus, teacherName) {
+    const status = approveStatus === 'Approve' ? 2 : 0;
+
+    const sql = 'UPDATE activity_participants SET approve_status = ?, update_status_by = ? WHERE id = ? LIMIT 1';
+
+    await db.query(sql, [
+      status,
+      teacherName,
+      participantId,
+    ]);
   }
 }

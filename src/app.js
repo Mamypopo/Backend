@@ -3,6 +3,7 @@ import cors from 'cors';
 import multer from 'multer';
 import config from './app.config.js';
 import V1Router from './v1/index.routes.js';
+import generatePDF from './v1/activity/activity-pdf.js';
 
 class Main {
   app = express();
@@ -58,3 +59,12 @@ class Main {
 }
 
 new Main().run();
+
+generatePDF([{
+  activityName: 'ทำความสะอาดลานวัด',
+  location: 'วัดนาวง',
+  date: '2023-01-01',
+  time: '13:00',
+  hourGain: 2,
+  updateStatusBy: 'อาจารย์ ทดสอบ ทดสอบ',
+}]);
