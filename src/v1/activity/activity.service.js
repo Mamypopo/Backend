@@ -171,6 +171,7 @@ export default class ActivityService {
     const sql = `SELECT
                  activities.name as activityName,
                  date,
+                 time,
                  location,
                  name,
                  hour_gain as hourGain,
