@@ -30,6 +30,7 @@ export default class ActivityService {
                  hour_gain as hourGain,
                  date,
                  time,
+                 student_limit as studentLimit,
                  created_by as createdBy,
                  created_at as createdAt,
                  updated_at as updatedAt
@@ -59,6 +60,7 @@ export default class ActivityService {
                  hour_gain as hourGain,
                  date,
                  time,
+                 student_limit as studentLimit,
                  created_by as createdBy,
                  created_at as createdAt,
                  updated_at as updatedAt
@@ -129,6 +131,7 @@ export default class ActivityService {
                  hour_gain as hourGain,
                  date,
                  time,
+                 student_limit as studentLimit,
                  created_by as createdBy,
                  created_at as createdAt,
                  updated_at as updatedAt
@@ -199,6 +202,7 @@ export default class ActivityService {
                  hour_gain = ?,
                  date = ?,
                  time = ?,
+                 student_limit = ?
                  created_by = ?`;
 
     /**
@@ -211,6 +215,7 @@ export default class ActivityService {
       activity.hourGain,
       new Date(activity.date).toLocaleDateString('sv-SE'),
       activity.time,
+      activity.studentLimit,
       activity.createdBy,
     ]);
 
@@ -248,7 +253,8 @@ export default class ActivityService {
                  location = ?,
                  hour_gain = ?,
                  date = ?,
-                 time = ?
+                 time = ?,
+                 student_limit = ?
                  WHERE id = ?`;
 
     await db.query(sql, [
@@ -258,6 +264,7 @@ export default class ActivityService {
       activity.hourGain,
       new Date(activity.date).toLocaleDateString('sv-SE'),
       activity.time,
+      activity.studentLimit,
       activity.id,
     ]);
 
