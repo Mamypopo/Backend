@@ -202,7 +202,7 @@ export default class ActivityService {
                  hour_gain = ?,
                  date = ?,
                  time = ?,
-                 student_limit = ?
+                 student_limit = ?,
                  created_by = ?`;
 
     /**
