@@ -22,7 +22,7 @@ export default class ActivityService {
 
   async getAllActivity() {
     const sql = `SELECT
-                 id,
+                 activities.id,
                  name,
                  picture,
                  detail,
@@ -33,9 +33,12 @@ export default class ActivityService {
                  student_limit as studentLimit,
                  created_by as createdBy,
                  created_at as createdAt,
-                 updated_at as updatedAt
+                 updated_at as updatedAt,
+                 COUNT(activity_participants.id) as paticipantCount
                  FROM activities
+                 LEFT JOIN activity_participants ON activities.id = activity_participants.activity_id
                  WHERE active_status = 1
+                 GROUP BY activities.id, created_at
                  ORDER BY created_at DESC`;
 
     /**
