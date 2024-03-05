@@ -22,24 +22,27 @@ export default class ActivityService {
 
   async getAllActivity() {
     const sql = `SELECT
-                 activities.id,
-                 name,
-                 picture,
-                 detail,
-                 location,
-                 hour_gain as hourGain,
-                 date,
-                 time,
-                 student_limit as studentLimit,
-                 created_by as createdBy,
-                 created_at as createdAt,
-                 updated_at as updatedAt,
-                 COUNT(activity_participants.id) as paticipantCount
-                 FROM activities
-                 LEFT JOIN activity_participants ON activities.id = activity_participants.activity_id
-                 WHERE active_status = 1
-                 GROUP BY activities.id, created_at
-                 ORDER BY created_at DESC`;
+    activities.id,
+    name,
+    picture,
+    detail,
+    location,
+    hour_gain as hourGain,
+    date,
+    time,
+    student_limit as studentLimit,
+    created_by as createdBy,
+    created_at as createdAt,
+    updated_at as updatedAt,
+    COUNT(activity_participants.id) as paticipantCount,
+    users.profile_img as createdByProfileImg,
+    CONCAT_WS(' ', users.first_name, users.last_name) as createdByFullName
+    FROM activities
+    LEFT JOIN activity_participants ON activities.id = activity_participants.activity_id
+    JOIN users ON users.id = activities.created_by
+    WHERE active_status = 1
+    GROUP BY activities.id, created_at
+    ORDER BY created_at DESC`;
 
     /**
      * @type { [import('mysql2').RowDataPacket[], import('mysql2').FieldPacket[]]}
@@ -49,6 +52,7 @@ export default class ActivityService {
     return Promise.all(result.map(async (item) => {
       const data = { ...item };
       data.picture = await this.fileManager.getFileBase64(data.picture);
+      data.createdByProfileImg = await this.fileManager.getFileBase64(data.createdByProfileImg);
       return data;
     }));
   }
