@@ -22,14 +22,17 @@ export default class NewService {
 
   async getNews() {
     const sql = `SELECT
-                 id,
+                 news.id,
                  topic,
                  picture,
                  content,
                  created_by as createdBy,
                  created_at as createdAt,
-                 updated_at as updatedAt
+                 updated_at as updatedAt,
+                 users.profile_img as createdByProfileImg,
+                 CONCAT_WS(' ', users.first_name, users.last_name) as createdByFullName
                  FROM news
+                 JOIN users ON users.id = created_by
                  ORDER BY created_at DESC`;
 
     /**
@@ -42,6 +45,8 @@ export default class NewService {
       if (temp.picture) {
         temp.picture = await new FileManager().getFileBase64(temp.picture);
       }
+
+      temp.createdByProfileImg = await new FileManager().getFileBase64(temp.createdByProfileImg);
 
       return temp;
     }));
