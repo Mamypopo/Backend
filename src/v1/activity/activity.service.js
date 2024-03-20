@@ -96,7 +96,8 @@ export default class ActivityService {
                  updated_at as updatedAt
                  FROM activity_comments
                  JOIN jit_asa.users u on u.id = activity_comments.user_id
-                 WHERE activity_id = ? `;
+                 WHERE activity_id = ?
+                 ORDER BY created_at DESC`;
 
     /**
      * @type { [import('mysql2').RowDataPacket[], import('mysql2').FieldPacket[]]}
