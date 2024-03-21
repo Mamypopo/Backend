@@ -59,7 +59,7 @@ export default class ActivityService {
 
   async getActivityByUserId(userId) {
     const sql = `SELECT
-                 id,
+                 activities.id,
                  name,
                  picture,
                  detail,
@@ -70,8 +70,10 @@ export default class ActivityService {
                  student_limit as studentLimit,
                  created_by as createdBy,
                  created_at as createdAt,
-                 updated_at as updatedAt
+                 updated_at as updatedAt,
+                 users.profile_img as createdByProfileImg
                  FROM activities
+                 JOIN users ON users.id = created_by
                  WHERE active_status = 1 AND created_by = ?
                  ORDER BY created_at DESC`;
 
@@ -83,6 +85,7 @@ export default class ActivityService {
     return Promise.all(result.map(async (item) => {
       const data = { ...item };
       data.picture = await this.fileManager.getFileBase64(data.picture);
+      data.createdByProfileImg = await this.fileManager.getFileBase64(data.createdByProfileImg);
       return data;
     }));
   }
