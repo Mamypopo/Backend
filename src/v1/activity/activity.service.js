@@ -71,7 +71,8 @@ export default class ActivityService {
                  created_by as createdBy,
                  created_at as createdAt,
                  updated_at as updatedAt,
-                 users.profile_img as createdByProfileImg
+                 users.profile_img as createdByProfileImg,
+                 CONCAT_WS(' ', users.first_name, users.last_name) as createdByFullName
                  FROM activities
                  JOIN users ON users.id = created_by
                  WHERE active_status = 1 AND created_by = ?

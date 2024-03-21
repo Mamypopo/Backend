@@ -63,7 +63,8 @@ export default class NewService {
                  created_by as createdBy,
                  created_at as createdAt,
                  updated_at as updatedAt,
-                 users.profile_img as createdByProfileImg
+                 users.profile_img as createdByProfileImg,
+                 CONCAT_WS(' ', users.first_name, users.last_name) as createdByFullName
                  FROM news
                  JOIN users ON users.id = created_by
                  WHERE created_by = ?
