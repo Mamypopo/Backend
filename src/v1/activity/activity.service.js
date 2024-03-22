@@ -72,9 +72,11 @@ export default class ActivityService {
                  created_at as createdAt,
                  updated_at as updatedAt,
                  users.profile_img as createdByProfileImg,
-                 CONCAT_WS(' ', users.first_name, users.last_name) as createdByFullName
+                 CONCAT_WS(' ', users.first_name, users.last_name) as createdByFullName,
+                 COUNT(activity_participants.id) as paticipantCount
                  FROM activities
                  JOIN users ON users.id = created_by
+                 LEFT JOIN activity_participants ON activities.id = activity_participants.activity_id
                  WHERE active_status = 1 AND created_by = ?
                  ORDER BY created_at DESC`;
 
