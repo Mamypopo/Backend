@@ -5,6 +5,7 @@ import validateToken, { validateRole } from '../auth/auth.middleware.js';
 const router = Router();
 
 router.get('/getAllStudent', validateToken, validateRole(['admin']), StudentController.getAllStudent);
+router.get('/getStudentCount', StudentController.getStudentCount);
 router.post('/updateStudent', validateToken, StudentController.updateStudent);
 router.post('/deleteStudent', validateToken, validateRole(['admin', 'teacher']), StudentController.deleteStudent);
 

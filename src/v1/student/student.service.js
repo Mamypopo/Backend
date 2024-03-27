@@ -40,6 +40,17 @@ export default class StudentService {
     return mapUser;
   }
 
+  async getStudentCount() {
+    const sql = `SELECT 
+                 COUNT(id) as count 
+                 FROM users 
+                 WHERE role = 'student'`;
+
+    const [result] = await db.query(sql);
+
+    return result;
+  }
+
   async getUserByEmail(email) {
     const sql = `SELECT
                  id,

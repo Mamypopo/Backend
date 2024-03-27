@@ -11,6 +11,17 @@ export const getAllStudent = async (req, res, next) => {
   }
 };
 
+export const getStudentCount = async (req, res, next) => {
+  try {
+    const result = await new StudentService().getStudentCount();
+    res.status(200).send({
+      result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updateStudent = async (req, res, next) => {
   try {
     const student = req.body;

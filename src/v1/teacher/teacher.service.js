@@ -38,6 +38,17 @@ export default class TeacherService {
     return mapUser;
   }
 
+  async getTeacherCount() {
+    const sql = `SELECT 
+                 COUNT(id) as count 
+                 FROM users 
+                 WHERE role = 'teacher'`;
+
+    const [result] = await db.query(sql);
+
+    return result;
+  }
+
   async getUserById(id) {
     const sql = `SELECT
                  id,

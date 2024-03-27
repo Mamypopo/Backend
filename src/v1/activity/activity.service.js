@@ -78,6 +78,52 @@ export default class ActivityService {
                  JOIN users ON users.id = created_by
                  LEFT JOIN activity_participants ON activities.id = activity_participants.activity_id
                  WHERE active_status = 1 AND created_by = ?
+                 GROUP BY activities.id
+                 ORDER BY created_at DESC`;
+
+    /**
+     * @type { [import('mysql2').RowDataPacket[], import('mysql2').FieldPacket[]]}
+     */
+    const [result] = await db.query(sql, [userId]);
+
+    return Promise.all(result.map(async (item) => {
+      const data = { ...item };
+      data.picture = await this.fileManager.getFileBase64(data.picture);
+      data.createdByProfileImg = await this.fileManager.getFileBase64(data.createdByProfileImg);
+      return data;
+    }));
+  }
+
+  async getActivityCount() {
+    const sql = 'SELECT count(id) AS count FROM activities WHERE status = active_status = 1';
+
+    const [result] = await db.query(sql);
+
+    return result;
+  }
+
+  async getStudentActivityHistory(userId) {
+    const sql = `SELECT
+                 activities.id,
+                 name,
+                 picture,
+                 detail,
+                 location,
+                 hour_gain as hourGain,
+                 date,
+                 time,
+                 student_limit as studentLimit,
+                 created_by as createdBy,
+                 created_at as createdAt,
+                 updated_at as updatedAt,
+                 users.profile_img as createdByProfileImg,
+                 CONCAT_WS(' ', users.first_name, users.last_name) as createdByFullName,
+                 COUNT(activity_participants.id) as paticipantCount
+                 FROM activities
+                 JOIN users ON users.id = created_by
+                 JOIN activity_participants ON activities.id = activity_participants.activity_id
+                 WHERE active_status = 1 AND activity_participants.student_id = ?
+                 GROUP BY activities.id, created_at
                  ORDER BY created_at DESC`;
 
     /**

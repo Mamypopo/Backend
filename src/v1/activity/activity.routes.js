@@ -14,6 +14,10 @@ router.get('/getStudentActivity', validateToken, ActivityController.getStudentAc
 
 router.get('/getStudentActivityDoc', validateToken, ActivityController.getStudentActivityDoc);
 
+router.get('/getStudentActivityHistory', validateToken, ActivityController.getStudentActivityHistory);
+
+router.get('/getAcitivityCount', ActivityController.getActivityCount);
+
 router.post('/addActivity', validateToken, validateRole(['teacher', 'admin']), ActivityController.addActivityHandler);
 
 router.post('/addComment', validateToken, ActivityController.addCommentHandler);

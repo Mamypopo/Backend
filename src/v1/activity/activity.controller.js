@@ -55,6 +55,28 @@ export const getStudentActivityDoc = async (req, res, next) => {
   }
 };
 
+export const getStudentActivityHistory = async (req, res, next) => {
+  try {
+    const result = await new ActivityService().getStudentActivityHistory(req.user.id);
+    res.status(200).send({
+      result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getActivityCount = async (req, res, next) => {
+  try {
+    const result = await new ActivityService().getActivityCount();
+    res.status(200).send({
+      result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export const addActivityHandler = async (req, res, next) => {
   try {
     if (!req.files) {

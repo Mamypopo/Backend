@@ -12,6 +12,17 @@ export const getAllTecher = async (req, res, next) => {
   }
 };
 
+export const getTeacherCount = async (req, res, next) => {
+  try {
+    const result = await new TeacherService().getTeacherCount();
+    res.status(200).send({
+      result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updateTeacher = async (req, res, next) => {
   try {
     const teacher = req.body;
