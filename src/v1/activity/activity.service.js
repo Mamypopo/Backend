@@ -95,7 +95,7 @@ export default class ActivityService {
   }
 
   async getActivityCount() {
-    const sql = 'SELECT count(id) AS count FROM activities WHERE status = active_status = 1';
+    const sql = 'SELECT count(id) AS count FROM activities WHERE active_status = 1';
 
     const [result] = await db.query(sql);
 
