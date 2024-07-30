@@ -1,0 +1,27 @@
+{
+  "name": "jit_asa_be",
+  "version": "1.0.0",
+  "main": "./src/app.ts",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "local": "nodemon -L -r dotenv/config ./src/app.js dotenv_config_path=./.env.local"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "concurrently": "^8.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.1",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.6.0",
+    "pdfkit": "^0.14.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.1",
+    "nodemon": "^3.0.1"
+  }
+}
