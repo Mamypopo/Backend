@@ -11,7 +11,8 @@
     "rules": {
       "import/extensions": [
         "error",
-        "ignorePackages"
+        "ignorePackages",
+        "windows"
       ],
       "max-len": [
         "error",
